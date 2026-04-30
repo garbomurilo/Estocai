@@ -38,7 +38,7 @@ Nos horários de pico (domingo de manhã), a fila da rotisserie cresce rápido. 
 ### Dores
 * Lentidão em somar vários itens manualmente.
 * Confusão ao fechar o turno se não houver um registo claro do método de pagamento (Dinheiro vs. Cartão).
-* Erros ao passar o valor total para o cliente.
+* Lentidão na averiguação do estoque.
 
 ### Como o Iniciativa S.A.B. ajuda:
 * **Abertura de Comanda Rápida:** Seleção de itens do cardápio com cálculos automáticos.
