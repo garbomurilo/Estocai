@@ -31,7 +31,7 @@
 ### 6. Recursos Principais
 * Lógica de negócio baseada nos processos da Rotisseria Brasinha.
 * Base de dados centralizada (substituindo o papel).
-* Desenvolvedor (Murilo Garbo).
+* Desenvolvedores (Murilo Garbo), (Vinicius Holtz).
 
 ### 7. Atividades Principais
 * Desenvolvimento do módulo de baixa automática de estoque.
