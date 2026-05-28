@@ -6,6 +6,7 @@
     <title>Estocaí - PDV & Inventário</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased hidden-scrollbar">
@@ -118,9 +119,26 @@
 
                 <div id="view-qrcode" class="hidden space-y-6 fade-in">
                     <h2 class="text-2xl font-bold text-gray-800 tracking-tight text-orange-900">Gerador de QR Code</h2>
-                    <div class="p-8 bg-white rounded-[32px] shadow-sm border border-gray-100 text-center text-gray-400">
-                        <i data-lucide="qr-code" class="w-12 h-12 mx-auto mb-4 opacity-50"></i>
-                        <p>Ferramenta para imprimir os QR Codes das mesas.</p>
+                    <div class="p-8 bg-white rounded-[32px] shadow-sm border border-gray-100 text-center flex flex-col items-center gap-6">
+                        
+                        <div class="bg-orange-50 p-4 rounded-2xl border border-orange-100 max-w-md w-full">
+                            <p class="text-orange-800 font-medium text-sm mb-3">Link do seu Cardápio Digital:</p>
+                            <div class="flex gap-2">
+                                <input type="text" id="qr-url-input" class="w-full px-4 py-3 rounded-xl bg-white border border-orange-200 focus:ring-2 focus:ring-orange-500 outline-none transition-all text-gray-600 text-sm" readonly>
+                                <button id="btn-gerar-qr" class="bg-orange-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-orange-700 transition-all shadow-md flex items-center gap-2">
+                                    <i data-lucide="zap" class="w-4 h-4"></i> Gerar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="qrcode-container" class="p-6 bg-white border-2 border-dashed border-gray-200 rounded-3xl hidden flex flex-col items-center gap-4">
+                            <div id="qrcode-imagem"></div>
+                            <p class="text-xs text-gray-400 font-medium">Aponte a câmera para testar</p>
+                        </div>
+                        
+                        <button id="btn-imprimir-qr" class="hidden mt-2 text-orange-600 font-bold hover:text-orange-800 transition-colors flex items-center gap-2 px-6 py-3 bg-orange-50 rounded-xl">
+                            <i data-lucide="printer" class="w-5 h-5"></i> Imprimir QR Code da Mesa
+                        </button>
                     </div>
                 </div>
 

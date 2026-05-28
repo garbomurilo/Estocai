@@ -36,7 +36,6 @@
 
                 snapshot.forEach(doc => {
                     const p = doc.data();
-                    // Mostra apenas itens ativos e que são de venda direta Estoque do Dia
                     if (p.ativo === true && p.tipo_estoque === 'DIA') {
                         htmlFinal += `
                             <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex justify-between items-center hover:shadow-md transition-shadow">
