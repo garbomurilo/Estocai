@@ -6,116 +6,60 @@
     <title>Cardápio - Brasinha</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-[#FDFCFB] text-gray-900 font-sans antialiased pb-24">
+<body class="bg-gray-50 text-gray-800 font-sans antialiased">
 
-    <div class="max-w-lg mx-auto min-h-screen bg-white shadow-2xl rounded-t-[40px] mt-4 animate-in slide-in-from-bottom-10 duration-700 relative">
-        <div class="p-8 text-center bg-gradient-to-b from-orange-50 to-white rounded-t-[40px]">
-            <div class="w-20 h-20 bg-orange-600 rounded-3xl flex items-center justify-center text-white mx-auto mb-4 shadow-xl shadow-orange-200">
-                <i data-lucide="flame" class="w-10 h-10"></i>
-            </div>
-            <h1 class="text-3xl font-black text-orange-900 tracking-tighter uppercase italic">Brasinha</h1>
-            <p class="text-orange-600 font-bold text-sm tracking-widest mt-1 uppercase">Rotisseria & Assados</p>
-            <div class="mt-6 inline-flex items-center gap-2 px-4 py-1 bg-green-100 text-green-700 rounded-full text-xs font-black uppercase shadow-sm">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                Aberto agora
-            </div>
-        </div>
+    <header class="bg-orange-600 text-white p-8 text-center rounded-b-[40px] shadow-lg">
+        <h1 class="text-3xl font-black tracking-tight mb-2">O Brasinha</h1>
+        <p class="text-orange-200 font-medium">Faça seu pedido direto no caixa</p>
+    </header>
 
-        <div id="menu-cliente-container" class="px-6 space-y-10 mt-2">
-            <p class="text-center text-gray-400 italic py-10">Carregando delícias...</p>
-        </div>
-
-        <div class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[80%] max-w-xs z-50">
-            <button onclick="window.open('https://wa.me/5515999999999', '_blank')" class="w-full py-5 bg-green-600 text-white rounded-[24px] font-black shadow-2xl shadow-green-600/30 flex items-center justify-center gap-3 hover:scale-105 active:scale-95 transition-all">
-                <i data-lucide="smartphone" class="w-5 h-5"></i> FAZER PEDIDO
-            </button>
-        </div>
-    </div>
+    <main class="max-w-md mx-auto p-6 mt-4 space-y-6" id="lista-cardapio">
+        <p class="text-center text-gray-400 italic my-10">Carregando cardápio...</p>
+    </main>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "Chave API",
-            authDomain: "brasiinha.firebaseapp.com",
-            projectId: "brasiinha",
-            storageBucket: "brasiinha.firebasestorage.app",
-            messagingSenderId: "350909634462",
-            appId: "1:350909634462:web:2089933774456a531de88f",
-            measurementId: "G-ZMS60JRF0N"
-        };
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { firebaseConfig } from './firebase-config.js';
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        document.addEventListener("DOMContentLoaded", async () => {
-            lucide.createIcons();
-            const container = document.getElementById("menu-cliente-container");
+        lucide.createIcons();
 
+        async function carregarCardapio() {
+            const container = document.getElementById('lista-cardapio');
             try {
                 const snapshot = await getDocs(collection(db, "produtos"));
-                let produtosDia = [];
+                let htmlFinal = "";
 
                 snapshot.forEach(doc => {
-                    const data = doc.data();
-                    if (data.tipo_estoque === 'DIA' && data.ativo) {
-                        produtosDia.push({ id: doc.id, ...data });
+                    const p = doc.data();
+                    // Mostra apenas itens ativos e que são de venda direta Estoque do Dia
+                    if (p.ativo === true && p.tipo_estoque === 'DIA') {
+                        htmlFinal += `
+                            <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex justify-between items-center hover:shadow-md transition-shadow">
+                                <div>
+                                    <h3 class="font-bold text-gray-800 text-lg">${p.nome}</h3>
+                                    <p class="text-xs text-orange-500 uppercase font-bold tracking-wider mt-1">${p.categoria}</p>
+                                </div>
+                                <div class="bg-orange-50 px-4 py-2 rounded-xl border border-orange-100">
+                                    <span class="font-black text-orange-700">R$ ${p.preco.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        `;
                     }
                 });
 
-                if (produtosDia.length === 0) {
-                    container.innerHTML = '<p class="text-center text-gray-400">Nenhum item disponível hoje.</p>';
-                    return;
-                }
+                container.innerHTML = htmlFinal || "<p class='text-center text-gray-500'>Nenhum produto disponível no momento.</p>";
 
-                const categorias = [...new Set(produtosDia.map(p => p.categoria))];
-                let htmlFinal = "";
-
-                categorias.forEach(cat => {
-                    htmlFinal += `
-                        <div class="space-y-4">
-                            <div class="flex items-center gap-4">
-                                <h3 class="text-sm font-black text-gray-400 uppercase tracking-[0.3em] whitespace-nowrap">${cat}</h3>
-                                <div class="h-[1px] bg-gray-100 w-full"></div>
-                            </div>
-                            <div class="space-y-6">
-                    `;
-                    
-                    produtosDia.filter(p => p.categoria === cat).forEach(product => {
-                        const alertHtml = product.alergicos ? `
-                            <div class="mt-2 inline-flex items-start gap-1 p-2 bg-red-50 rounded-lg border border-red-100">
-                                <i data-lucide="alert-circle" class="w-3 h-3 text-red-500 mt-[2px] shrink-0"></i>
-                                <span class="text-[10px] text-red-700 uppercase tracking-widest">
-                                    Obs: <strong class="font-black">${product.alergicos}</strong>
-                                </span>
-                            </div>
-                        ` : '';
-
-                        htmlFinal += `
-                            <div class="flex justify-between items-start gap-4">
-                                <div class="space-y-1 flex-1">
-                                    <p class="font-bold text-gray-800 text-lg">${product.nome}</p>
-                                    ${product.ingredientes ? `<p class="text-xs text-gray-500 mt-1 leading-relaxed">${product.ingredientes}</p>` : ''}
-                                    ${alertHtml}
-                                </div>
-                                <p class="font-black text-gray-800 text-xl whitespace-nowrap mt-1">R$ ${product.preco.toFixed(2)}</p>
-                            </div>
-                        `;
-                    });
-
-                    htmlFinal += `</div></div>`;
-                });
-
-                container.innerHTML = htmlFinal;
-                lucide.createIcons();
             } catch (error) {
                 console.error("Erro ao carregar cardápio:", error);
-                container.innerHTML = '<p class="text-red-500 text-center">Erro ao carregar o menu.</p>';
+                container.innerHTML = "<p class='text-center text-red-500'>Erro ao carregar o cardápio.</p>";
             }
-        });
+        }
+        carregarCardapio();
     </script>
 </body>
 </html>
