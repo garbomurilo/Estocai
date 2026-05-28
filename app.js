@@ -5,7 +5,7 @@ import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, runTransacti
 
 // Chaves de conexão
 const firebaseConfig = {
-    apiKey: "AIzaSyBLS4BUmdmGTuwpAy_jSzYAJpyScScYY6Q",
+    apiKey: "ChaveAPI",
     authDomain: "brasiinha.firebaseapp.com",
     projectId: "brasiinha",
     storageBucket: "brasiinha.firebasestorage.app",
