@@ -468,4 +468,24 @@ if (btnGerarQr) {
             setTimeout(() => { printWindow.print(); printWindow.close(); }, 300);
         }
     });
+//PESQUISA INVENTÁRIO
+const inputPesquisaEstoque = document.getElementById('input-pesquisa-estoque');
+
+if (inputPesquisaEstoque) {
+    inputPesquisaEstoque.addEventListener('input', (e) => {
+        const termoDigitado = e.target.value.toLowerCase();
+        const linhasDaTabela = tabelaEstoque.querySelectorAll('tr');
+        
+        linhasDaTabela.forEach(linha => {
+            if (linha.innerText.includes("Buscando dados") || linha.innerText.includes("Nenhum item")) return;
+            
+            const nomeProduto = linha.querySelector('p.font-bold')?.innerText.toLowerCase() || "";
+            if (nomeProduto.includes(termoDigitado)) {
+                linha.style.display = '';
+            } else {
+                linha.style.display = 'none';
+            }
+        });
+    });
+}
 }
