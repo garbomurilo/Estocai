@@ -1,0 +1,26 @@
+{
+  "name": "estocai-backend-serverless",
+  "version": "1.0.0",
+  "description": "Camada de Backend Serverless (Firebase Cloud Functions) para o Sistema Estocaí - FATEC TCC",
+  "main": "index.js",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions,firestore",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions,firestore:rules",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^4.8.0"
+  },
+  "devDependencies": {
+    "firebase-tools": "^13.0.0"
+  },
+  "private": true,
+  "author": "Murilo Costa Garbo & Vinicius Holtz de Oliveira",
+  "license": "ISC"
+}
