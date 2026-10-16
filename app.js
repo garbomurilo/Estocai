@@ -460,7 +460,7 @@ if (btnGerarQr) {
             printWindow.document.write(`
                 <html>
                     <head><title>QR Code</title><style>body { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif; text-align: center; } h1 { color: #ea580c; font-size: 40px; } img { width: 300px; height: 300px; }</style></head>
-                    <body><h1>O Brasinha</h1><p>Escaneie para ver o cardápio</p><img src="${qrDataUrl}" /></body>
+                    <body><h1>Estocaí</h1><p>Escaneie para ver o cardápio</p><img src="${qrDataUrl}" /></body>
                 </html>
             `);
             printWindow.document.close();

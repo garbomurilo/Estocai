@@ -1,0 +1,44 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Funções auxiliares
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Regras Multi-Tenant: cada negócio tem seus dados isolados sob /tenants/{tenantId}
+    match /tenants/{tenantId} {
+      
+      // Produtos do Cardápio / Estoque
+      // Leitura pública permitida para exibição do Cardápio Web (/cardapio/:tenantId)
+      // Escrita permitida para usuários autenticados
+      match /produtos/{produtoId} {
+        allow read: if true;
+        allow create, update, delete: if isAuthenticated();
+      }
+
+      // Clientes e Programa de Fidelidade
+      match /clientes/{clienteId} {
+        allow read, write: if isAuthenticated();
+      }
+
+      // Pedidos e Vendas (Baixa de Estoque)
+      match /pedidos/{pedidoId} {
+        allow read, create: if isAuthenticated();
+        allow update, delete: if isAuthenticated();
+      }
+    }
+
+    // Coleção de usuários para mapeamento de tenant
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Regra padrão de bloqueio
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

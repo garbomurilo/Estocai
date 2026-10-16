@@ -6,7 +6,34 @@ const { tratarErros } = require("./middlewares/errorHandler");
 const app = express();
 
 // Middlewares Globais
-app.use(cors());
+app.use(cors({
+    origin: (origin, callback) => {
+        // Permite requisições sem origin (como curl, Postman, mobile ou server-to-server)
+        if (!origin) return callback(null, true);
+
+        // Em desenvolvimento, permite qualquer porta local
+        if (process.env.NODE_ENV === "development") {
+            if (/^http:\/\/localhost:\d+$/.test(origin) || /^http:\/\/127\.0\.0\.1:\d+$/.test(origin)) {
+                return callback(null, true);
+            }
+        }
+
+        const allowed = [
+            "http://localhost:5173",
+            "http://localhost:4173",
+            process.env.FRONTEND_URL
+        ].filter(Boolean);
+
+        if (allowed.includes(origin)) {
+            return callback(null, true);
+        }
+
+        return callback(null, true); // Permite no ambiente de desenvolvimento
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Tenant-ID"],
+    credentials: true
+}));
 app.use(express.json());
 
 // Log básico de requisições

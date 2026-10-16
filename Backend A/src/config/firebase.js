@@ -9,22 +9,30 @@ const { getAuth } = require("firebase-admin/auth");
 const fs = require("fs");
 const path = require("path");
 
+let hasCredentials = false;
+
 if (!getApps().length) {
     const credsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS || path.join(__dirname, "../../serviceAccountKey.json");
 
     if (fs.existsSync(credsPath)) {
-        const serviceAccount = require(credsPath);
-        initializeApp({
-            credential: cert(serviceAccount),
-            projectId: process.env.FIREBASE_PROJECT_ID || "brasiinha"
-        });
-        console.log("[Firebase Admin] Inicializado com chave de conta de serviço local.");
+        try {
+            const serviceAccount = require(credsPath);
+            initializeApp({
+                credential: cert(serviceAccount),
+                projectId: process.env.FIREBASE_PROJECT_ID || "brasiinha"
+            });
+            hasCredentials = true;
+            console.log("[Firebase Admin] Inicializado com chave de conta de serviço local (serviceAccountKey.json).");
+        } catch (err) {
+            console.error("[Firebase Admin] Erro ao carregar serviceAccountKey.json:", err.message);
+        }
     } else {
         // Inicialização padrão para ambiente com variáveis de ambiente ou emulador
         initializeApp({
             projectId: process.env.FIREBASE_PROJECT_ID || "brasiinha"
         });
-        console.log("[Firebase Admin] Inicializado com Application Default Credentials / Project ID.");
+        console.warn("⚠️  [Firebase Admin] 'serviceAccountKey.json' não encontrado na pasta 'Backend A'.");
+        console.warn("ℹ️  Operações de leitura pública usarão fallback REST; operações administrativas completas necessitam do arquivo.");
     }
 }
 
@@ -33,5 +41,6 @@ const auth = getAuth();
 
 module.exports = {
     db,
-    auth
+    auth,
+    hasCredentials
 };

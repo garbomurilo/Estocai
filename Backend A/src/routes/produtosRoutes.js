@@ -3,7 +3,7 @@ const produtosController = require("../controllers/produtosController");
 
 const router = Router();
 
-// Rotas públicas ou autenticadas
+// Rotas protegidas (quando chamadas via /produtos puro)
 router.get("/", produtosController.listar);
 router.get("/:id", produtosController.buscarPorId);
 router.post("/", produtosController.criar);

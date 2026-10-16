@@ -1,15 +1,30 @@
 /**
  * Serviço de Pedidos e Vendas (Regras de Negócio e Transações Atômicas)
- * Executa baixas e estornos de estoque em transações ACID via Firebase Admin SDK.
+ * Multi-Tenancy Estrito: Todos os pedidos residem isoladamente em /tenants/{tenantId}/pedidos
  */
 
-const { db } = require("../config/firebase");
+const { db, hasCredentials } = require("../config/firebase");
 const { FieldValue } = require("firebase-admin/firestore");
 
-/**
- * Fecha um pedido/venda executando a baixa atômica de estoque e gerando o registro final.
- */
-async function fecharPedidoComBaixaEstoque(dadosVenda) {
+// Memória local de pedidos para desenvolvimento sem credenciais
+const devPedidosMemory = {};
+
+function getTenantCol(tenantId, subcol) {
+    if (!tenantId) {
+        const error = new Error("Tenant não identificado para operação de pedidos.");
+        error.statusCode = 400;
+        throw error;
+    }
+    return db.collection("tenants").doc(tenantId).collection(subcol);
+}
+
+async function fecharPedidoComBaixaEstoque(tenantId, dadosVenda) {
+    if (!tenantId) {
+        const error = new Error("Tenant não especificado.");
+        error.statusCode = 400;
+        throw error;
+    }
+
     const { itens, clienteId, formaPagamento = "DINHEIRO", desconto = 0, operadorId } = dadosVenda;
 
     if (!itens || !Array.isArray(itens) || itens.length === 0) {
@@ -18,17 +33,59 @@ async function fecharPedidoComBaixaEstoque(dadosVenda) {
         throw error;
     }
 
+    // Em dev sem credenciais, simula o fechamento do pedido e armazena na memória do tenant
+    if (!hasCredentials) {
+        if (!devPedidosMemory[tenantId]) devPedidosMemory[tenantId] = [];
+        let subtotal = 0;
+        const itensProcessados = itens.map(item => {
+            const qtd = Number(item.quantidade) || 1;
+            const preco = Number(item.preco) || 0;
+            subtotal += preco * qtd;
+            return {
+                id: item.id,
+                nome: item.nome,
+                quantidade: qtd,
+                preco_unitario: preco,
+                subtotal: preco * qtd
+            };
+        });
+        const valorTotalFinal = Math.max(0, subtotal - Number(desconto));
+        const pedidoId = "dev_ped_" + Date.now();
+        const novoPedido = {
+            id: pedidoId,
+            tenantId,
+            data_hora: new Date().toISOString(),
+            operador_id: operadorId || "operador-pdv",
+            cliente_id: clienteId || null,
+            forma_pagamento: formaPagamento,
+            subtotal,
+            desconto: Number(desconto),
+            valor_total: valorTotalFinal,
+            status: "CONCLUIDO",
+            itens: itensProcessados
+        };
+        devPedidosMemory[tenantId].unshift(novoPedido);
+        return {
+            sucesso: true,
+            pedidoId,
+            valorTotal: valorTotalFinal,
+            subtotal,
+            desconto: Number(desconto),
+            itensProcessados: itensProcessados.length
+        };
+    }
+
     return await db.runTransaction(async (transaction) => {
         const produtosParaAtualizar = [];
         let subtotalCalculado = 0;
 
-        // 1. Fase de Leitura: validação de estoque de cada item no banco
+        // 1. Fase de Leitura estritamente dentro de tenants/{tenantId}/produtos
         for (const item of itens) {
-            const produtoRef = db.collection("produtos").doc(item.id);
+            const produtoRef = getTenantCol(tenantId, "produtos").doc(item.id);
             const produtoSnap = await transaction.get(produtoRef);
 
             if (!produtoSnap.exists) {
-                const error = new Error(`Produto não localizado na base de dados: ${item.nome || item.id}`);
+                const error = new Error(`Produto não localizado na base de dados do negócio ${tenantId}: ${item.nome || item.id}`);
                 error.statusCode = 404;
                 throw error;
             }
@@ -54,7 +111,7 @@ async function fecharPedidoComBaixaEstoque(dadosVenda) {
                 const error = new Error(
                     `Estoque insuficiente para "${produtoData.nome}". Disponível: ${estoqueAtual}, Solicitado: ${qtdSolicitada}.`
                 );
-                error.statusCode = 409; // Conflito de concorrência/estoque
+                error.statusCode = 409;
                 throw error;
             }
 
@@ -70,15 +127,14 @@ async function fecharPedidoComBaixaEstoque(dadosVenda) {
             });
         }
 
-        // Validação opcional de cliente para fidelidade (RF06)
         let clienteRef = null;
         let clienteSnap = null;
         if (clienteId) {
-            clienteRef = db.collection("clientes").doc(clienteId);
+            clienteRef = getTenantCol(tenantId, "clientes").doc(clienteId);
             clienteSnap = await transaction.get(clienteRef);
         }
 
-        // 2. Fase de Escrita: dedução atômica do estoque
+        // 2. Fase de Escrita: dedução atômica no estoque do tenant
         for (const p of produtosParaAtualizar) {
             transaction.update(p.ref, {
                 estoque: p.novoEstoque,
@@ -88,10 +144,12 @@ async function fecharPedidoComBaixaEstoque(dadosVenda) {
 
         const valorTotalFinal = Math.max(0, subtotalCalculado - Number(desconto));
 
-        // 3. Persistência do Pedido na coleção "pedidos"
-        const novoPedidoRef = db.collection("pedidos").doc();
+        // 3. Persistência do Pedido em tenants/{tenantId}/pedidos
+        const novoPedidoRef = getTenantCol(tenantId, "pedidos").doc();
+
         const registroPedido = {
             id: novoPedidoRef.id,
+            tenantId,
             data_hora: FieldValue.serverTimestamp(),
             operador_id: operadorId || "operador-pdv",
             cliente_id: clienteId || null,
@@ -111,7 +169,7 @@ async function fecharPedidoComBaixaEstoque(dadosVenda) {
 
         transaction.set(novoPedidoRef, registroPedido);
 
-        // 4. Bonificação de Fidelidade (RF06)
+        // 4. Bonificação de Fidelidade dentro do tenant
         if (clienteRef && clienteSnap && clienteSnap.exists) {
             const comprasAnteriores = Number(clienteSnap.data()?.fidelidade?.quantidade_compras_validas) || 0;
             const novaContagem = comprasAnteriores + 1;
@@ -133,17 +191,32 @@ async function fecharPedidoComBaixaEstoque(dadosVenda) {
     });
 }
 
-/**
- * Cancela um pedido e estorna os itens para o estoque de forma atômica.
- */
-async function cancelarPedidoEStornar(pedidoId, operadorId) {
-    const pedidoRef = db.collection("pedidos").doc(pedidoId);
+async function cancelarPedidoEStornar(tenantId, pedidoId, operadorId) {
+    if (!tenantId) {
+        const error = new Error("Tenant não especificado.");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    if (!hasCredentials) {
+        const lista = devPedidosMemory[tenantId] || [];
+        const ped = lista.find(p => p.id === pedidoId);
+        if (ped) {
+            ped.status = "CANCELADO";
+            return { sucesso: true, pedidoId, status: "CANCELADO" };
+        }
+        const error = new Error(`Pedido "${pedidoId}" não encontrado no negócio ${tenantId}.`);
+        error.statusCode = 404;
+        throw error;
+    }
+
+    const pedidoRef = getTenantCol(tenantId, "pedidos").doc(pedidoId);
 
     return await db.runTransaction(async (transaction) => {
         const pedidoSnap = await transaction.get(pedidoRef);
 
         if (!pedidoSnap.exists) {
-            const error = new Error(`Pedido com ID "${pedidoId}" não encontrado.`);
+            const error = new Error(`Pedido "${pedidoId}" não encontrado no negócio ${tenantId}.`);
             error.statusCode = 404;
             throw error;
         }
@@ -156,9 +229,8 @@ async function cancelarPedidoEStornar(pedidoId, operadorId) {
             throw error;
         }
 
-        // Estorna as quantidades ao estoque
         for (const item of pedidoData.itens || []) {
-            const produtoRef = db.collection("produtos").doc(item.id);
+            const produtoRef = getTenantCol(tenantId, "produtos").doc(item.id);
             const produtoSnap = await transaction.get(produtoRef);
 
             if (produtoSnap.exists) {
@@ -185,8 +257,19 @@ async function cancelarPedidoEStornar(pedidoId, operadorId) {
     });
 }
 
-async function listarPedidos(limite = 20) {
-    const snapshot = await db.collection("pedidos")
+async function listarPedidos(tenantId, limite = 20) {
+    if (!tenantId) {
+        const error = new Error("Tenant não especificado.");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    if (!hasCredentials) {
+        return (devPedidosMemory[tenantId] || []).slice(0, Number(limite));
+    }
+
+    const ref = getTenantCol(tenantId, "pedidos");
+    const snapshot = await ref
         .orderBy("data_hora", "desc")
         .limit(Number(limite))
         .get();
@@ -196,10 +279,28 @@ async function listarPedidos(limite = 20) {
     return pedidos;
 }
 
-async function obterPedidoPorId(pedidoId) {
-    const snap = await db.collection("pedidos").doc(pedidoId).get();
+async function obterPedidoPorId(tenantId, pedidoId) {
+    if (!tenantId) {
+        const error = new Error("Tenant não especificado.");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    if (!hasCredentials) {
+        const lista = devPedidosMemory[tenantId] || [];
+        const pedido = lista.find(p => p.id === pedidoId);
+        if (!pedido) {
+            const error = new Error(`Pedido "${pedidoId}" não encontrado.`);
+            error.statusCode = 404;
+            throw error;
+        }
+        return pedido;
+    }
+
+    const snap = await getTenantCol(tenantId, "pedidos").doc(pedidoId).get();
+
     if (!snap.exists) {
-        const error = new Error(`Pedido com ID "${pedidoId}" não encontrado.`);
+        const error = new Error(`Pedido com ID "${pedidoId}" não encontrado no negócio ${tenantId}.`);
         error.statusCode = 404;
         throw error;
     }

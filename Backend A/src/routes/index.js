@@ -14,8 +14,14 @@ router.get("/health", (req, res) => {
     });
 });
 
-router.use("/produtos", produtosRoutes);
-router.use("/pedidos", pedidosRoutes);
-router.use("/clientes", clientesRoutes);
+const { autenticar } = require("../middlewares/authMiddleware");
+
+// Rota pública do cardápio digital (não precisa de token)
+router.get("/produtos/public/:tenantId", require("../controllers/produtosController").listarPublico);
+
+// Rotas protegidas
+router.use("/produtos", autenticar, produtosRoutes);
+router.use("/pedidos", autenticar, pedidosRoutes);
+router.use("/clientes", autenticar, clientesRoutes);
 
 module.exports = router;
