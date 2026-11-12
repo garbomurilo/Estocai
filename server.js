@@ -1,59 +1,64 @@
-const http = require('http');
-const fs = require('fs');
 const path = require('path');
 
+// Garante carregamento dos pacotes instalados em backend/node_modules
+const backendNodeModules = path.join(__dirname, 'backend', 'node_modules');
+if (!module.paths.includes(backendNodeModules)) {
+    module.paths.unshift(backendNodeModules);
+}
+
+const express = require('express');
+const cors = require('cors');
+require('dotenv').config({ path: path.join(__dirname, 'backend', '.env') });
+require('dotenv').config();
+
+const authRoutes = require('./backend/src/routes/authRoutes');
+const produtosRoutes = require('./backend/src/routes/produtosRoutes');
+const clientesRoutes = require('./backend/src/routes/clientesRoutes');
+const pedidosRoutes = require('./backend/src/routes/pedidosRoutes');
+const usuariosRoutes = require('./backend/src/routes/usuariosRoutes');
+const configuracoesRoutes = require('./backend/src/routes/configuracoesRoutes');
+const expedientesRoutes = require('./backend/src/routes/expedientesRoutes');
+const estoqueDiaRoutes = require('./backend/src/routes/estoqueDiaRoutes');
+
+const app = express();
 const PORT = process.env.PORT || 3000;
 
-const MIME_TYPES = {
-    '.html': 'text/html; charset=UTF-8',
-    '.js': 'text/javascript; charset=UTF-8',
-    '.css': 'text/css; charset=UTF-8',
-    '.json': 'application/json; charset=UTF-8',
-    '.png': 'image/png',
-    '.jpg': 'image/jpeg',
-    '.jpeg': 'image/jpeg',
-    '.gif': 'image/gif',
-    '.svg': 'image/svg+xml',
-    '.ico': 'image/x-icon'
-};
+app.use(cors());
+app.use(express.json());
 
-const server = http.createServer((req, res) => {
-    // Enable CORS just in case
-    res.setHeader('Access-Control-Allow-Origin', '*');
+// =========================================================================
+// Rotas da API REST (Backend Multi-Tenant via Firebase Admin SDK)
+// =========================================================================
+app.use('/api/auth', authRoutes);
+app.use('/api/produtos', produtosRoutes);
+app.use('/api/estoque-dia', estoqueDiaRoutes);
+app.use('/api/clientes', clientesRoutes);
+app.use('/api/fidelidade', clientesRoutes);
+app.use('/api/pedidos', pedidosRoutes);
+app.use('/api/usuarios', usuariosRoutes);
+app.use('/api/configuracoes', configuracoesRoutes);
+app.use('/api/expediente', expedientesRoutes);
+app.use('/api/expedientes', expedientesRoutes);
 
-    let cleanPath = decodeURI(req.url.split('?')[0]);
-    if (cleanPath === '/' || cleanPath === '') {
-        cleanPath = '/index.html';
-    }
-
-    const filePath = path.join(__dirname, cleanPath);
-
-    // Prevent directory traversal attacks
-    if (!filePath.startsWith(__dirname)) {
-        res.writeHead(403, { 'Content-Type': 'text/plain; charset=UTF-8' });
-        res.end('Acesso proibido');
-        return;
-    }
-
-    fs.stat(filePath, (err, stats) => {
-        if (err || !stats.isFile()) {
-            res.writeHead(404, { 'Content-Type': 'text/plain; charset=UTF-8' });
-            res.end('404 - Página não encontrada');
-            return;
-        }
-
-        const ext = path.extname(filePath).toLowerCase();
-        const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-
-        res.writeHead(200, { 'Content-Type': contentType });
-        fs.createReadStream(filePath).pipe(res);
-    });
+// Desabilita cache para refletir alterações imediatamente
+app.use((req, res, next) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    next();
 });
 
-server.listen(PORT, () => {
+// Integração de Build: serve a pasta dist do React/Vite em produção e arquivos estáticos auxiliares
+app.use(express.static(path.join(__dirname, 'frontend/dist'), { etag: false, lastModified: false }));
+app.use(express.static(__dirname, { etag: false, lastModified: false }));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.listen(PORT, () => {
     console.log(`=========================================`);
-    console.log(`  Estocaí rodando localmente!`);
+    console.log(`  Estocaí (API REST + Front-end) ativo!`);
     console.log(`  > Painel Principal: http://localhost:${PORT}/`);
     console.log(`  > Cardápio:         http://localhost:${PORT}/cardapio.html`);
+    console.log(`  > API REST:         http://localhost:${PORT}/api`);
     console.log(`=========================================`);
 });

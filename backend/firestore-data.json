@@ -1,0 +1,426 @@
+{
+  "tenants": {
+    "HEWn7dyEgLYnT8hDBBg2w4QKIBf1": {
+      "nomeFantasia": "Estocaí Comércio",
+      "ativo": true,
+      "criadoEm": "2026-11-05T15:21:24.557Z",
+      "config_fidelidade": {
+        "meta_compras_premio": 10,
+        "valor_minimo_ponto": 59.9,
+        "ativo": true,
+        "descricao_premio": "Prêmio Fidelidade"
+      },
+      "limiar_estoque_minimo": 10
+    },
+    "GSoCGtXCC1httaCrURhTS9q04pA2": {
+      "nomeFantasia": "jaun lanches",
+      "ativo": true,
+      "criadoEm": "2026-11-12T12:56:04.331Z",
+      "limiar_estoque_minimo": 0,
+      "config_fidelidade": {
+        "meta_compras_premio": 10,
+        "valor_minimo_ponto": 0,
+        "descricao_premio": "Prêmio Fidelidade",
+        "ativo": true
+      }
+    },
+    "6HLW5vSeF9TsQQmVXISsaPx3ivD2": {
+      "nomeFantasia": "jaun lanches",
+      "ativo": true,
+      "criadoEm": "2026-11-12T13:00:45.069Z",
+      "limiar_estoque_minimo": 0,
+      "config_fidelidade": {
+        "meta_compras_premio": 10,
+        "valor_minimo_ponto": 0,
+        "descricao_premio": "Prêmio Fidelidade",
+        "ativo": true
+      }
+    }
+  },
+  "usuarios": {
+    "HEWn7dyEgLYnT8hDBBg2w4QKIBf1": {
+      "nome": "teste123",
+      "email": "teste123@gmail.com",
+      "cargo": "ADMIN",
+      "ativo": true,
+      "tenantId": "HEWn7dyEgLYnT8hDBBg2w4QKIBf1"
+    },
+    "EDSsZ9asJJVh84TG8JV9Yi3pmEp1": {
+      "nome": "Vini o calvo",
+      "email": "123deoliveira4@gamil.com",
+      "cargo": "CAIXA",
+      "ativo": true,
+      "tenantId": "HEWn7dyEgLYnT8hDBBg2w4QKIBf1"
+    },
+    "IG0x2krGM1d006VbRQdN5iYTmti2": {
+      "nome": "Anão velho",
+      "email": "velhoanudo@gmail.com",
+      "cargo": "ESTOQUISTA",
+      "ativo": true,
+      "tenantId": "HEWn7dyEgLYnT8hDBBg2w4QKIBf1"
+    },
+    "GSoCGtXCC1httaCrURhTS9q04pA2": {
+      "nome": "juan",
+      "email": "juanlanches@gemial.com",
+      "cargo": "ADMIN",
+      "ativo": true,
+      "status": "pendente",
+      "aprovado": false,
+      "criadoEm": "2026-11-12T12:56:04.332Z",
+      "tenantId": "GSoCGtXCC1httaCrURhTS9q04pA2"
+    },
+    "6HLW5vSeF9TsQQmVXISsaPx3ivD2": {
+      "nome": "juan",
+      "email": "juanlanches2@gmail.com",
+      "cargo": "ADMIN",
+      "ativo": true,
+      "status": "aprovado",
+      "aprovado": true,
+      "criadoEm": "2026-11-12T13:00:45.070Z",
+      "tenantId": "6HLW5vSeF9TsQQmVXISsaPx3ivD2",
+      "aprovadoEm": "2026-11-12T13:08:04.174Z"
+    }
+  },
+  "tenants/HEWn7dyEgLYnT8hDBBg2w4QKIBf1/produtos": {
+    "91a4d0726461e2ea484f": {
+      "ativo": true,
+      "nome": "Frago FF",
+      "categoria": "Geral",
+      "preco": 200.5,
+      "estoque": 9,
+      "unidade": "un",
+      "tipo_estoque": "DIA",
+      "receita": [
+        {
+          "insumoId": "4c1b5daa95f382f61ede",
+          "quantidade": 1
+        },
+        {
+          "insumoId": "a79e6c60ebd99036bd8d",
+          "quantidade": 2
+        }
+      ],
+      "ultimaProducaoEm": "2026-11-05T17:48:06.319Z"
+    },
+    "a79e6c60ebd99036bd8d": {
+      "ativo": true,
+      "nome": "maionese",
+      "categoria": "Geral",
+      "preco": 33,
+      "estoque": 5,
+      "unidade": "L",
+      "tipo_estoque": "GERAL",
+      "lotes": [
+        {
+          "numeroLote": "LOTE-M01",
+          "validade": "2026-11-10",
+          "quantidade": 5
+        }
+      ],
+      "receita": []
+    },
+    "7a369db3a6f7094a43e6": {
+      "ativo": true,
+      "nome": "cabelos do vini",
+      "categoria": "Geral",
+      "preco": 59.89,
+      "estoque": 9,
+      "unidade": "un",
+      "tipo_estoque": "DIA",
+      "receita": [
+        {
+          "insumoId": "4c1b5daa95f382f61ede",
+          "quantidade": 30
+        }
+      ],
+      "ultimaProducaoEm": "2026-11-05T17:48:41.293Z"
+    },
+    "4c1b5daa95f382f61ede": {
+      "ativo": true,
+      "nome": "frango",
+      "categoria": "Geral",
+      "preco": 50,
+      "estoque": 131,
+      "unidade": "un",
+      "tipo_estoque": "GERAL",
+      "lotes": [
+        {
+          "numeroLote": "LOTE-F01",
+          "validade": "2026-11-15",
+          "quantidade": 131
+        }
+      ],
+      "receita": []
+    }
+  },
+  "tenants/HEWn7dyEgLYnT8hDBBg2w4QKIBf1/pedidos": {
+    "4fd21c9d0cd696893faa": {
+      "id_cliente": null,
+      "data_hora": "2026-11-05T15:22:34.389Z",
+      "tipo_pedido": "BALCAO",
+      "status": "CONCLUIDO",
+      "valor_desconto": 0,
+      "valor_total": 401,
+      "pagamento": {
+        "forma_pagamento": "PIX",
+        "status": "PAGO"
+      },
+      "itens": [
+        {
+          "id_produto": "91a4d0726461e2ea484f",
+          "nome_produto": "Frago FF",
+          "quantidade": 2,
+          "preco_unitario": 200.5,
+          "subtotal": 401
+        }
+      ]
+    },
+    "e13ae73e1a06a1a91b37": {
+      "id_cliente": "04d7a6e51cb7b7f3b018",
+      "data_hora": "2026-11-05T15:25:51.862Z",
+      "tipo_pedido": "BALCAO",
+      "status": "CONCLUIDO",
+      "valor_desconto": 0,
+      "valor_total": 401,
+      "pagamento": {
+        "forma_pagamento": "PIX",
+        "status": "PAGO"
+      },
+      "itens": [
+        {
+          "id_produto": "91a4d0726461e2ea484f",
+          "nome_produto": "Frago FF",
+          "quantidade": 2,
+          "preco_unitario": 200.5,
+          "subtotal": 401
+        }
+      ]
+    },
+    "97dfc1054c1982284d98": {
+      "id_cliente": "04d7a6e51cb7b7f3b018",
+      "data_hora": "2026-11-05T15:35:09.791Z",
+      "tipo_pedido": "BALCAO",
+      "status": "CONCLUIDO",
+      "valor_desconto": 0,
+      "valor_total": 200.5,
+      "pagamento": {
+        "forma_pagamento": "PIX",
+        "status": "PAGO"
+      },
+      "itens": [
+        {
+          "id_produto": "91a4d0726461e2ea484f",
+          "nome_produto": "Frago FF",
+          "quantidade": 1,
+          "preco_unitario": 200.5,
+          "subtotal": 200.5
+        }
+      ]
+    },
+    "8bbd8e6b7654ebdb10b1": {
+      "id_cliente": "192fc79ac811b835a381",
+      "data_hora": "2026-11-05T16:51:50.507Z",
+      "tipo_pedido": "BALCAO",
+      "status": "CONCLUIDO",
+      "valor_desconto": 0,
+      "valor_total": 401,
+      "pagamento": {
+        "forma_pagamento": "CARTAO",
+        "status": "PAGO"
+      },
+      "itens": [
+        {
+          "id_produto": "91a4d0726461e2ea484f",
+          "nome_produto": "Frago FF",
+          "quantidade": 2,
+          "preco_unitario": 200.5,
+          "subtotal": 401
+        }
+      ]
+    },
+    "08c0f33db90fae6f63e7": {
+      "id_cliente": "192fc79ac811b835a381",
+      "data_hora": "2026-11-05T16:54:13.194Z",
+      "tipo_pedido": "BALCAO",
+      "status": "CONCLUIDO",
+      "valor_desconto": 0,
+      "valor_total": 59.89,
+      "pagamento": {
+        "forma_pagamento": "CARTAO",
+        "status": "PAGO"
+      },
+      "itens": [
+        {
+          "id_produto": "7a369db3a6f7094a43e6",
+          "nome_produto": "cabelos do vini",
+          "quantidade": 1,
+          "preco_unitario": 59.89,
+          "subtotal": 59.89
+        }
+      ]
+    },
+    "d7a31c3b351e43e33636": {
+      "id_cliente": "192fc79ac811b835a381",
+      "data_hora": "2026-11-05T16:54:18.041Z",
+      "tipo_pedido": "BALCAO",
+      "status": "CONCLUIDO",
+      "valor_desconto": 0,
+      "valor_total": 200.5,
+      "pagamento": {
+        "forma_pagamento": "CARTAO",
+        "status": "PAGO"
+      },
+      "itens": [
+        {
+          "id_produto": "91a4d0726461e2ea484f",
+          "nome_produto": "Frago FF",
+          "quantidade": 1,
+          "preco_unitario": 200.5,
+          "subtotal": 200.5
+        }
+      ]
+    },
+    "658a02384f7aafe080aa": {
+      "id_cliente": null,
+      "data_hora": "2026-11-05T17:28:11.869Z",
+      "tipo_pedido": "BALCAO",
+      "status": "CONCLUIDO",
+      "valor_desconto": 0,
+      "valor_total": 200.5,
+      "pagamento": {
+        "forma_pagamento": "PIX",
+        "status": "PAGO"
+      },
+      "itens": [
+        {
+          "id_produto": "91a4d0726461e2ea484f",
+          "nome_produto": "Frago FF",
+          "quantidade": 1,
+          "preco_unitario": 200.5,
+          "subtotal": 200.5
+        }
+      ]
+    },
+    "7aa7cfaac539e0629058": {
+      "id_cliente": null,
+      "data_hora": "2026-11-05T17:49:13.398Z",
+      "tipo_pedido": "BALCAO",
+      "status": "CONCLUIDO",
+      "valor_desconto": 0,
+      "valor_total": 781.1700000000001,
+      "pagamento": {
+        "forma_pagamento": "PIX",
+        "status": "PAGO"
+      },
+      "itens": [
+        {
+          "id_produto": "7a369db3a6f7094a43e6",
+          "nome_produto": "cabelos do vini",
+          "quantidade": 3,
+          "preco_unitario": 59.89,
+          "subtotal": 179.67
+        },
+        {
+          "id_produto": "91a4d0726461e2ea484f",
+          "nome_produto": "Frago FF",
+          "quantidade": 3,
+          "preco_unitario": 200.5,
+          "subtotal": 601.5
+        }
+      ]
+    }
+  },
+  "tenants/HEWn7dyEgLYnT8hDBBg2w4QKIBf1/clientes": {
+    "192fc79ac811b835a381": {
+      "nome": "epaminondas",
+      "cpf": "111.111.111-11",
+      "telefone": "(11) 11111-1111",
+      "fidelidade": {
+        "quantidade_compras_validas": 2,
+        "elegivel_premio": false
+      }
+    }
+  },
+  "tenants/HEWn7dyEgLYnT8hDBBg2w4QKIBf1/expedientes": {
+    "2c2ed5c3ca6a70e628cd": {
+      "id": "2c2ed5c3ca6a70e628cd",
+      "dataAbertura": "2026-11-05T17:27:59.483Z",
+      "valorInicial": 0,
+      "status": "fechado",
+      "operadoPor": "HEWn7dyEgLYnT8hDBBg2w4QKIBf1",
+      "operadoPorNome": "teste123",
+      "dataFechamento": "2026-11-05T17:28:04.462Z",
+      "valorFinalInformado": 0,
+      "valorCalculadoVendas": 0,
+      "discrepancia": 0,
+      "fechadoPor": "HEWn7dyEgLYnT8hDBBg2w4QKIBf1"
+    },
+    "da6460a28f8562e81a56": {
+      "id": "da6460a28f8562e81a56",
+      "dataAbertura": "2026-11-05T17:28:09.048Z",
+      "valorInicial": 0,
+      "status": "fechado",
+      "operadoPor": "HEWn7dyEgLYnT8hDBBg2w4QKIBf1",
+      "operadoPorNome": "teste123",
+      "dataFechamento": "2026-11-05T17:28:27.394Z",
+      "valorFinalInformado": 50,
+      "valorCalculadoVendas": 0,
+      "discrepancia": 50,
+      "fechadoPor": "HEWn7dyEgLYnT8hDBBg2w4QKIBf1"
+    },
+    "326763df9d0909240d5f": {
+      "id": "326763df9d0909240d5f",
+      "dataAbertura": "2026-11-05T17:49:03.244Z",
+      "valorInicial": 0,
+      "status": "fechado",
+      "operadoPor": "HEWn7dyEgLYnT8hDBBg2w4QKIBf1",
+      "operadoPorNome": "teste123",
+      "dataFechamento": "2026-11-05T17:49:48.593Z",
+      "valorFinalInformado": 1000781.17,
+      "valorCalculadoVendas": 781.17,
+      "discrepancia": 1000000,
+      "detalhamentoPagamentos": {
+        "esperado": {
+          "dinheiro": 0,
+          "cartao": 0,
+          "pix": 781.17,
+          "total": 781.17
+        },
+        "informado": {
+          "dinheiro": 1000000,
+          "cartao": 0,
+          "pix": 781.17,
+          "total": 1000781.17
+        },
+        "diferencas": {
+          "dinheiro": 1000000,
+          "cartao": 0,
+          "pix": 0,
+          "total": 1000000
+        }
+      },
+      "mensagensDiscrepancia": [
+        "Sobra R$ 1000000.00 em dinheiro físico (Esperado: R$ 0.00 | Informado: R$ 1000000.00)"
+      ],
+      "fechadoPor": "HEWn7dyEgLYnT8hDBBg2w4QKIBf1"
+    }
+  },
+  "tenants/6HLW5vSeF9TsQQmVXISsaPx3ivD2/produtos": {
+    "4c5f7974c5923884a9b7": {
+      "ativo": true,
+      "nome": "maonese 3",
+      "categoria": "Geral",
+      "preco": 15,
+      "estoque": 4,
+      "unidade": "un",
+      "tipo_estoque": "DIA",
+      "receita": [
+        {
+          "insumoId": "27a599940de1fb40a808",
+          "quantidade": 3
+        }
+      ],
+      "ultimaProducaoEm": "2026-11-12T13:57:21.001Z"
+    }
+  }
+}
