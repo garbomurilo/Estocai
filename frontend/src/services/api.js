@@ -4,10 +4,8 @@
  */
 import { auth } from "../firebase";
 
-const API_BASE_URL =
-    typeof window !== "undefined" && window.location.port && window.location.port !== "3000"
-        ? "http://localhost:3000"
-        : "";
+// URL fixa apontando para o seu back-end hospedado no Render
+const API_BASE_URL = "https://estocai-i4vb.onrender.com";
 
 /**
  * Executa uma requisição HTTP autenticada enviando o idToken JWT no header Authorization.
@@ -97,4 +95,3 @@ export const ConfiguracoesAPI = {
             body: { limiar_estoque_minimo }
         })
 };
-
