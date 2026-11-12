@@ -20,11 +20,11 @@ O projeto adota estritamente o padrão **Cliente-Servidor com API REST**, centra
 
 ```mermaid
 flowchart LR
-    A["Navegador<br/>(React 19 + Vite + Tailwind CSS)"] -->|1. Login / Obtém idToken JWT| B["Firebase Authentication<br/>(Client SDK)"]
-    A -->|2. Requisições REST (/api/*)<br/>Header: Authorization Bearer idToken| C["Back-end Node.js + Express<br/>(server.js + backend/src/routes/*)"]
-    C -->|3. verifyIdToken() + RBAC + Regras de Negócio| D["Firebase Admin SDK<br/>(backend/serviceAccountKey.json)"]
-    D -->|4. Leitura, Escrita e Transações ACID| E["Cloud Firestore / Store Multi-Tenant<br/>(tenants/{tenantId}/...)"]
-    C -->|5. E-mail de Aprovação de Conta| F["Serviço SMTP<br/>(Nodemailer)"]
+    A["Navegador\nReact 19 + Vite + Tailwind CSS"] -->|"1. Login e obtenção de idToken JWT"| B["Firebase Authentication\nClient SDK"]
+    A -->|"2. Requisições REST /api\nBearer idToken"| C["Back-end Node.js + Express\nserver.js + backend/src/routes"]
+    C -->|"3. verifyIdToken, RBAC e Regras"| D["Firebase Admin SDK\nserviceAccountKey.json"]
+    D -->|"4. Leitura, Escrita e Transações ACID"| E["Cloud Firestore Multi-Tenant\ntenants / tenantId"]
+    C -->|"5. E-mail de Aprovação de Conta"| F["Serviço SMTP\nNodemailer"]
 ```
 
 ---
