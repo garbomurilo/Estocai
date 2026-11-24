@@ -138,25 +138,22 @@ router.post('/register', verifyTokenOnly, async (req, res) => {
         await db.collection('usuarios').doc(uid).set(usuarioDoc);
 
         // 3. [SERVIÇO DE E-MAIL] Dispara e-mail via Nodemailer para os fornecedores (process.env.ADMIN_EMAIL)
-        let emailInfo = null;
-        try {
-            emailInfo = await enviarEmailAprovacaoUsuario({
-                uid,
-                nome,
-                email,
-                cargo,
-                tenantId,
-                nomeFantasia
-            });
-        } catch (mailError) {
-            console.error('[POST /api/auth/register] Aviso ao enviar e-mail de aprovação:', mailError.message);
-        }
+        enviarEmailAprovacaoUsuario({
+            uid,
+            nome,
+            email,
+            cargo,
+            tenantId,
+            nomeFantasia
+        }).catch((mailError) => {
+            console.error('[POST /api/auth/register] Aviso ao enviar e-mail de aprova??o:', mailError.message);
+        });
 
         return res.status(201).json({
             uid,
             ...usuarioDoc,
-            message: 'Cadastro realizado com sucesso! Sua conta passará por uma análise e você será liberado em breve.',
-            notificacaoEnviada: Boolean(emailInfo)
+            message: 'Cadastro realizado com sucesso! Sua conta passar? por uma an?lise e voc? ser? liberado em breve.',
+            notificacaoEnviada: true
         });
     } catch (error) {
         console.error('[POST /api/auth/register] Erro:', error);
