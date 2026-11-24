@@ -29,6 +29,16 @@ app.use(express.json());
 // =========================================================================
 // Rotas da API REST (Backend Multi-Tenant via Firebase Admin SDK)
 // =========================================================================
+// Rota de Health Check (keep-alive para Render / UptimeRobot / cron-job.org)
+app.get('/api/health', (req, res) => {
+    res.status(200).json({
+        status: 'ok',
+        service: 'estocai-api',
+        uptime: Math.floor(process.uptime()),
+        timestamp: new Date().toISOString()
+    });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/produtos', produtosRoutes);
 app.use('/api/estoque-dia', estoqueDiaRoutes);

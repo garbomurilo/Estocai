@@ -18,6 +18,15 @@ router.use(verificarRole(['adm', 'caixa']));
  * Calcula o detalhamento de vendas concluídas desde a abertura do expediente
  * agrupadas por meio de pagamento: DINHEIRO, CARTAO (Crédito/Débito) e PIX/Outros.
  */
+function timestampParaMillis(valor) {
+    if (!valor) return 0;
+    if (typeof valor.toMillis === 'function') return valor.toMillis();
+    if (typeof valor.toDate === 'function') return valor.toDate().getTime();
+    if (typeof valor._seconds === 'number') return valor._seconds * 1000;
+    const ms = new Date(valor).getTime();
+    return Number.isNaN(ms) ? 0 : ms;
+}
+
 async function calcularVendasPorMeioPeriodo(tenantId, dataAberturaISO) {
     const pedidosSnap = await db
         .collection('tenants')
@@ -25,7 +34,7 @@ async function calcularVendasPorMeioPeriodo(tenantId, dataAberturaISO) {
         .collection('pedidos')
         .get();
 
-    const aberturaTime = dataAberturaISO ? new Date(dataAberturaISO).getTime() : 0;
+    const aberturaTime = timestampParaMillis(dataAberturaISO);
     let vendasDinheiro = 0.0;
     let vendasCartao = 0.0;
     let vendasPix = 0.0;
@@ -36,7 +45,7 @@ async function calcularVendasPorMeioPeriodo(tenantId, dataAberturaISO) {
         const statusPedido = String(p.status || 'CONCLUIDO').toUpperCase();
         if (statusPedido !== 'CONCLUIDO') return;
 
-        const dataPedidoTime = p.data_hora ? new Date(p.data_hora).getTime() : 0;
+        const dataPedidoTime = timestampParaMillis(p.data_hora);
         if (aberturaTime && dataPedidoTime < aberturaTime) return;
 
         const valor = Number(parseFloat(p.valor_total || 0.0));
@@ -79,7 +88,7 @@ async function obterExpedienteAberto(tenantId) {
     if (snapshot.empty) return null;
 
     const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-    docs.sort((a, b) => String(b.dataAbertura || '').localeCompare(String(a.dataAbertura || '')));
+    docs.sort((a, b) => timestampParaMillis(b.dataAbertura) - timestampParaMillis(a.dataAbertura));
     return docs[0];
 }
 
