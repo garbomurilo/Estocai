@@ -123,19 +123,27 @@ async function criarTransporter() {
     const user = (process.env.SMTP_USER || process.env.EMAIL_USER || '').trim();
     const pass = (process.env.SMTP_PASS || process.env.EMAIL_PASS || '').replace(/\s+/g, '');
 
+    const timeoutConfig = {
+        connectionTimeout: 8000,
+        greetingTimeout: 8000,
+        socketTimeout: 10000
+    };
+
     if (host && user && pass) {
         return nodemailer.createTransport({
             host,
             port,
             secure: port === 465,
-            auth: { user, pass }
+            auth: { user, pass },
+            ...timeoutConfig
         });
     }
 
     if (user && pass) {
         return nodemailer.createTransport({
             service: process.env.SMTP_SERVICE || 'gmail',
-            auth: { user, pass }
+            auth: { user, pass },
+            ...timeoutConfig
         });
     }
 
@@ -152,7 +160,7 @@ async function criarTransporter() {
 async function enviarEmailAprovacaoUsuario({ uid, nome, email, cargo, tenantId, nomeFantasia }) {
     const adminEmail = process.env.ADMIN_EMAIL || 'brasinhagrilldev@gmail.com';
     const remetente = process.env.SMTP_FROM || process.env.SMTP_USER || 'brasinhagrilldev@gmail.com';
-    const appBaseUrl = process.env.APP_BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
+    const appBaseUrl = (process.env.APP_BASE_URL || process.env.RENDER_EXTERNAL_URL || `http://localhost:${process.env.PORT || 3000}`).replace(/\/+$/, '');
 
     const tokenAprovacao = gerarTokenAprovacao({ uid, email, cargo, tenantId });
     const linkAprovacao = `${appBaseUrl}/api/auth/aprovar-usuario?token=${encodeURIComponent(tokenAprovacao)}`;
